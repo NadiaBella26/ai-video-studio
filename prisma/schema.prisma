@@ -1,0 +1,172 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String     @id @default(cuid())
+  email         String     @unique
+  name          String?
+  image         String?
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+  
+  projects      Project[]
+  characters    Character[]
+  videos        Video[]
+  savedPrompts  SavedPrompt[]
+  account       Account?
+}
+
+model Account {
+  id            String  @id @default(cuid())
+  userId        String  @unique
+  user          User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type          String
+  provider      String
+  providerAccountId String
+  refreshToken  String?
+  accessToken   String?
+  expiresAt     Int?
+  tokenType     String?
+  scope         String?
+  idToken       String?
+  sessionState  String?
+
+  @@unique([provider, providerAccountId])
+}
+
+model Project {
+  id              String     @id @default(cuid())
+  userId          String
+  user            User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  title           String
+  description     String?
+  thumbnail       String?
+  status          String     @default("draft") // draft, generating, completed, failed
+  
+  prompt          String?
+  videoType       String     @default("auto") // auto, shorts, reels, portrait, landscape, square, etc
+  aspectRatio     String     @default("9:16") // 9:16, 16:9, 1:1, 4:5, custom
+  duration        Int        @default(30) // in seconds
+  language        String     @default("en")
+  voiceType       String     @default("female")
+  
+  scenes          Scene[]
+  video           Video?
+  
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
+}
+
+model Scene {
+  id              String     @id @default(cuid())
+  projectId       String
+  project         Project    @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  
+  sceneIndex      Int
+  title           String
+  description     String?
+  script          String?
+  characterId     String?
+  character       Character? @relation(fields: [characterId], references: [id])
+  
+  backgroundUrl   String?
+  cameraAngle     String?    // wide, medium, close-up, pov
+  cameraMovement  String?    // static, pan, zoom, dolly
+  lighting        String?    // natural, studio, cinematic
+  
+  duration        Int        @default(5) // in seconds
+  musicUrl        String?
+  soundEffects    String[]   @default([])
+  
+  status          String     @default("pending") // pending, generating, completed, failed
+  generatedUrl    String?
+  
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
+}
+
+model Video {
+  id              String     @id @default(cuid())
+  projectId       String     @unique
+  project         Project    @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  userId          String
+  user            User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  title           String
+  description     String?
+  videoUrl        String
+  thumbnailUrl    String?
+  duration        Int        // in seconds
+  fileSize        Int?       // in bytes
+  resolution      String     @default("1080p") // 480p, 720p, 1080p
+  
+  captions        Caption[]
+  
+  viewCount       Int        @default(0)
+  downloadCount   Int        @default(0)
+  
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
+}
+
+model Caption {
+  id              String     @id @default(cuid())
+  videoId         String
+  video           Video      @relation(fields: [videoId], references: [id], onDelete: Cascade)
+  
+  text            String
+  startTime       Float      // in seconds
+  endTime         Float      // in seconds
+  position        String     @default("bottom") // top, center, bottom
+  style           String?    // json for font, size, color
+  
+  createdAt       DateTime   @default(now())
+}
+
+model Character {
+  id              String     @id @default(cuid())
+  userId          String
+  user            User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  name            String
+  description     String?
+  appearance      String?    // detailed description
+  age             String?    // baby, child, teen, adult, elderly
+  outfit          String?    // clothing description
+  personality     String?    // traits
+  voiceType       String?    // male, female, child
+  expressions     String[]   @default([]) // happy, sad, confused, etc
+  speakingStyle   String?    // formal, casual, energetic, calm
+  
+  imageUrl        String?    // reference image
+  modelType       String     @default("human") // human, cartoon, animal, fantasy
+  
+  isPublic        Boolean    @default(false)
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
+  
+  scenes          Scene[]
+}
+
+model SavedPrompt {
+  id              String     @id @default(cuid())
+  userId          String
+  user            User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  title           String
+  content         String
+  category        String?    // comedy, education, advertisement, etc
+  
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
+}
