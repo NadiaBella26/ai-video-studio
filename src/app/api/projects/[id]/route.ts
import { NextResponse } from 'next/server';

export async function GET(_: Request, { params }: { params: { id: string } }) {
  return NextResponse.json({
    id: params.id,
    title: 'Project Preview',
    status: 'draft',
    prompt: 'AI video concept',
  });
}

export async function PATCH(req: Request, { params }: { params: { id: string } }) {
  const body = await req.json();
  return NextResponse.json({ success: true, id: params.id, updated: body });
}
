@@ -1,0 +1,17 @@
+src/app/api/projects/route.ts
+import { NextResponse } from 'next/server';
+
+export async function GET() {
+  return NextResponse.json({
+    projects: [
+      { id: 'project-1', title: 'Nigerian Baby Comedy Ad', status: 'Completed' },
+      { id: 'project-2', title: 'Luxury Product Promo', status: 'Draft' },
+      { id: 'project-3', title: 'Business Explainer', status: 'Rendering' },
+    ],
+  });
+}
+
+export async function POST(req: Request) {
+  const body = await req.json();
+  return NextResponse.json({ success: true, project: { ...body, id: `project-${Date.now()}` } });
+}

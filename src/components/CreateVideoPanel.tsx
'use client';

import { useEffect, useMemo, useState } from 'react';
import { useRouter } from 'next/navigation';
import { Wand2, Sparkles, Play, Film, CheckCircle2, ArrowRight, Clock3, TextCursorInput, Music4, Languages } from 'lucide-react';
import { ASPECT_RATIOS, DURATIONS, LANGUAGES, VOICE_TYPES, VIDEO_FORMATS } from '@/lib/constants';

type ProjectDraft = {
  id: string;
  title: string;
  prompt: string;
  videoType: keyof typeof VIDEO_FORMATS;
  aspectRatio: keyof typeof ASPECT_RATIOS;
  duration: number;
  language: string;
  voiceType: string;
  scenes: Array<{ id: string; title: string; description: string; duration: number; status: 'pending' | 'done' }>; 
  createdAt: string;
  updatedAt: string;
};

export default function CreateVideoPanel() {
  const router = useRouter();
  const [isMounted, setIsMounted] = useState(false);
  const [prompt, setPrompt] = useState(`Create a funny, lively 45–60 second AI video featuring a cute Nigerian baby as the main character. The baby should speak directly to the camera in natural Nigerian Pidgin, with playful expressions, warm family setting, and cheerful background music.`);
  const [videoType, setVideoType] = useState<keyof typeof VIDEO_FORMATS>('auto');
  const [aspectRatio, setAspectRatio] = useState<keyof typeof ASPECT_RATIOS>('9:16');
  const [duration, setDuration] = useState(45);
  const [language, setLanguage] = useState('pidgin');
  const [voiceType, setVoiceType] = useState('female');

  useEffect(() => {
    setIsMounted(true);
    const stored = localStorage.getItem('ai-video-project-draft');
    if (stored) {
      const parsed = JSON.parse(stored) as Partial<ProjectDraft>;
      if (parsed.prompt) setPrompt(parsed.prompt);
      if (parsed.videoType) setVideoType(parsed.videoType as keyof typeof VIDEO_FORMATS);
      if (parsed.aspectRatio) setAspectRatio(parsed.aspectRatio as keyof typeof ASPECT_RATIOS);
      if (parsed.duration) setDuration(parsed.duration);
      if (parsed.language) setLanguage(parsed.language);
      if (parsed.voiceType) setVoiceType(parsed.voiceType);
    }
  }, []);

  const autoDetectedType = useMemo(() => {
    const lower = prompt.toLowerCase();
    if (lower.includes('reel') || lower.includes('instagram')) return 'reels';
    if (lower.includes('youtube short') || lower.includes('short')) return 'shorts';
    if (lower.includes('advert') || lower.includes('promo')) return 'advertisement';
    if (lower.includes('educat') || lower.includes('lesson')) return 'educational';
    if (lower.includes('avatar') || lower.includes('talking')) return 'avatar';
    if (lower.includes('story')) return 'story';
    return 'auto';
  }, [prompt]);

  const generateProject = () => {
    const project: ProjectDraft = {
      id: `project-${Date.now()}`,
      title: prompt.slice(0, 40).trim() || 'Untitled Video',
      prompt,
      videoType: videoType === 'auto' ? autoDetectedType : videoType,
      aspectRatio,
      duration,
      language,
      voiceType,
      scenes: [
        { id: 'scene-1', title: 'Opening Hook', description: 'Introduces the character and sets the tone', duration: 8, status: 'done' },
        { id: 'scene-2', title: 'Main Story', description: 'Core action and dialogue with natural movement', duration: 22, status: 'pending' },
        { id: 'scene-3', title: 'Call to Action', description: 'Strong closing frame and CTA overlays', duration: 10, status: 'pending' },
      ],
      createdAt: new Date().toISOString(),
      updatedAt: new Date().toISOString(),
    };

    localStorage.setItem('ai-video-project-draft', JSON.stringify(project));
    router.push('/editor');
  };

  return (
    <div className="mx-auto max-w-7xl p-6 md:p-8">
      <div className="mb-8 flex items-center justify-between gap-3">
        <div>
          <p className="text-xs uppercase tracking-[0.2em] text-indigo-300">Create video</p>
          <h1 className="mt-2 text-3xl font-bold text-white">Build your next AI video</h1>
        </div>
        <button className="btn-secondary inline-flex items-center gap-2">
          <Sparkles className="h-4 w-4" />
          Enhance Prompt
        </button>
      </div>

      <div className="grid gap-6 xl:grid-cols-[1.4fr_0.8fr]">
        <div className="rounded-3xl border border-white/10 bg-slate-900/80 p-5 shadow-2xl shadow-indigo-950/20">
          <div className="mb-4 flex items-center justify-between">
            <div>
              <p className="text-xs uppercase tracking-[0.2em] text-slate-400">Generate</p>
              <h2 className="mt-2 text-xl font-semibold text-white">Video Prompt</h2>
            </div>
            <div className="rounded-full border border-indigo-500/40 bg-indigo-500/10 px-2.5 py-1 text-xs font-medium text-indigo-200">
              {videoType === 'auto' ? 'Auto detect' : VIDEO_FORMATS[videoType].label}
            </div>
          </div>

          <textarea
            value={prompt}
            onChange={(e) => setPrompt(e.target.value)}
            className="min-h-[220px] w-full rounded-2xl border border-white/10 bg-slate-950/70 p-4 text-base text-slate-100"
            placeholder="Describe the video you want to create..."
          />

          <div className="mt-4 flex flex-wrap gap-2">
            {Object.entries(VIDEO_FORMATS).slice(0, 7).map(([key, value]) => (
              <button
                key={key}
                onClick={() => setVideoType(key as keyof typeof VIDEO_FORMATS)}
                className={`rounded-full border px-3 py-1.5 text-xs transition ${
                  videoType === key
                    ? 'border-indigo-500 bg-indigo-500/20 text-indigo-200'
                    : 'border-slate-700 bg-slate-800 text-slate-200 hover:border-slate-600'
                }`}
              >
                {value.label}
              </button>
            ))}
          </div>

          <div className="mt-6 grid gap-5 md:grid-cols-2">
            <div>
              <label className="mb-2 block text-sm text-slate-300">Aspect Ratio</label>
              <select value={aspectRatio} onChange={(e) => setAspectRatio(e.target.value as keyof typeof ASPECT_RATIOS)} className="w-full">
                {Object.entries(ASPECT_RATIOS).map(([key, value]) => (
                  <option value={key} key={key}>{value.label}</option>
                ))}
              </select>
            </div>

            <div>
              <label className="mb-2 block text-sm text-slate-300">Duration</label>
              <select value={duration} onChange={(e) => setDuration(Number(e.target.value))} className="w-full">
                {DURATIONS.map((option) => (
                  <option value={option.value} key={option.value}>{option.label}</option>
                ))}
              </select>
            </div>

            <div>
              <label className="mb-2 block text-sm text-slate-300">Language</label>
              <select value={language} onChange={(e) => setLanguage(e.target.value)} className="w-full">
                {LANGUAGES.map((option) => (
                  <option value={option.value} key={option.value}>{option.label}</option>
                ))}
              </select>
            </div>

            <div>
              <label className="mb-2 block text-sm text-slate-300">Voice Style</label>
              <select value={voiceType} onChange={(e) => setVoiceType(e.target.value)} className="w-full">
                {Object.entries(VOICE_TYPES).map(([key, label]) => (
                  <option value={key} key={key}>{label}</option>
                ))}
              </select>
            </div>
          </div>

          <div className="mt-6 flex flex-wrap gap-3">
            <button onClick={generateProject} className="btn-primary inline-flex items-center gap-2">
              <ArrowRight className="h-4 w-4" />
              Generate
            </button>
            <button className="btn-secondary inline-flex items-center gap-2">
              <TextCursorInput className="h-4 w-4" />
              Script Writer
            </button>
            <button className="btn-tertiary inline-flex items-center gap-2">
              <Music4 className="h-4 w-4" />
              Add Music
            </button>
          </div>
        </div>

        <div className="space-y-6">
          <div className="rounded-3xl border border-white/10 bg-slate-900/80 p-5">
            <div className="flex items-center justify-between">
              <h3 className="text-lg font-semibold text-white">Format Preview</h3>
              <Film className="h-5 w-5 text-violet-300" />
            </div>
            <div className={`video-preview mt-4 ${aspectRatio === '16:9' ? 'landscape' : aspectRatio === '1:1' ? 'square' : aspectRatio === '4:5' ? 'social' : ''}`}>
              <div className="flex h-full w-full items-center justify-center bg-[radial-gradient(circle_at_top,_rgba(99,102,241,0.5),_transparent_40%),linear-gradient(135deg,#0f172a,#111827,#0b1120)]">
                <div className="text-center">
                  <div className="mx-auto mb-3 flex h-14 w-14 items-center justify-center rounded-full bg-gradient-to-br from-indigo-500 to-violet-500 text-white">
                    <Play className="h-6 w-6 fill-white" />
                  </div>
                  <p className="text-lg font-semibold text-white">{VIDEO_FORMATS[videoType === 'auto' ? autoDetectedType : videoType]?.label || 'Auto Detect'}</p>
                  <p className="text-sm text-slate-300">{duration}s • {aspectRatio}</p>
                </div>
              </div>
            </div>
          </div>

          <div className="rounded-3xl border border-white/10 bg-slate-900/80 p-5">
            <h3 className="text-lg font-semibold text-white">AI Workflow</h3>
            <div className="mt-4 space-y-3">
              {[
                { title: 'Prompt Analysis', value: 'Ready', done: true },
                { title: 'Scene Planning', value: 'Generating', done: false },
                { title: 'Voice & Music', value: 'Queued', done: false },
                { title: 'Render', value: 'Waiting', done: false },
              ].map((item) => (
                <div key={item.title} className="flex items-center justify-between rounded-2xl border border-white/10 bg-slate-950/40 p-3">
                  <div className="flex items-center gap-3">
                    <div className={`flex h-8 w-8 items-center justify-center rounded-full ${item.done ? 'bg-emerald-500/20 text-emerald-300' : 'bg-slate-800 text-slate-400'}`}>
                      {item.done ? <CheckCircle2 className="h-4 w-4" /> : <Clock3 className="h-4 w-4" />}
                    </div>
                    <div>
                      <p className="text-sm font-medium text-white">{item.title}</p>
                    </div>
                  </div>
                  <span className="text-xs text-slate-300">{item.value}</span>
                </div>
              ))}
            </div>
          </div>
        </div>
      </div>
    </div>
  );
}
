@@ -1,0 +1,235 @@
+import { motion } from 'framer-motion';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useMemo, useState } from 'react';
+import { ArrowRight, Clapperboard, Sparkles, Wand2, Video, Play, Film, Clock3, CheckCircle2, Search, SlidersHorizontal } from 'lucide-react';
+import { EXAMPLE_PROMPTS, VIDEO_FORMATS, ASPECT_RATIOS, LANGUAGES, VOICE_TYPES } from '@/lib/constants';
+
+export default function Dashboard() {
+  const router = useRouter();
+  const [prompt, setPrompt] = useState(EXAMPLE_PROMPTS[0].content);
+
+  const stats = useMemo(
+    () => [
+      { label: 'Videos created', value: '2,840', accent: 'from-indigo-500 to-violet-500' },
+      { label: 'Avg. generation time', value: '3m 42s', accent: 'from-cyan-500 to-blue-500' },
+      { label: 'Saved projects', value: '186', accent: 'from-emerald-500 to-teal-500' },
+      { label: 'AI characters', value: '24', accent: 'from-pink-500 to-rose-500' },
+    ],
+    []
+  );
+
+  const recentProjects = [
+    { title: 'Nigerian Baby Comedy Ad', type: 'TikTok Short', status: 'Completed', time: '2 mins ago' },
+    { title: 'Fitness Product Promo', type: 'Landscape', status: 'Draft', time: '1 hour ago' },
+    { title: 'Business Explainer', type: 'Educational', status: 'Rendering', time: '3 hours ago' },
+  ];
+
+  const templates = [
+    { name: 'Short-form Ads', type: 'TikTok', color: 'from-pink-500 to-rose-500' },
+    { name: 'Explainers', type: 'Educational', color: 'from-blue-500 to-cyan-500' },
+    { name: 'Avatar Videos', type: 'Talking Character', color: 'from-violet-500 to-indigo-500' },
+    { name: 'Product Promo', type: 'Commercial', color: 'from-emerald-500 to-teal-500' },
+  ];
+
+  const handleCreate = () => {
+    const projectPayload = {
+      title: prompt.slice(0, 42) || 'Untitled AI video',
+      prompt,
+      videoType: 'auto',
+      aspectRatio: '9:16',
+      duration: 45,
+      language: 'pidgin',
+      voiceType: 'female',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      scenes: [
+        {
+          id: 'scene-1',
+          sceneIndex: 1,
+          title: 'Opening Hook',
+          description: 'Introduces the character and sets the energy',
+          duration: 8,
+          status: 'pending',
+        },
+        {
+          id: 'scene-2',
+          sceneIndex: 2,
+          title: 'Main Action',
+          description: 'The character acts out the core message',
+          duration: 20,
+          status: 'pending',
+        },
+        {
+          id: 'scene-3',
+          sceneIndex: 3,
+          title: 'Call to Action',
+          description: 'Ends with a punchy CTA or brand callout',
+          duration: 10,
+          status: 'pending',
+        },
+      ],
+    };
+
+    localStorage.setItem('ai-video-project-draft', JSON.stringify(projectPayload));
+    router.push('/create');
+  };
+
+  return (
+    <div className="p-6 md:p-8">
+      <div className="mb-8 flex items-center justify-between gap-4">
+        <div>
+          <p className="text-sm uppercase tracking-[0.2em] text-indigo-300">Home / Dashboard</p>
+          <h1 className="mt-2 text-3xl font-bold text-white">Create standout video content with AI</h1>
+        </div>
+        <button className="btn-primary hidden md:inline-flex items-center gap-2">
+          <Wand2 className="h-4 w-4" />
+          Create with AI
+        </button>
+      </div>
+
+      <div className="grid gap-6 xl:grid-cols-[1.5fr_0.9fr]">
+        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="rounded-3xl border border-white/10 bg-slate-900/80 p-6 shadow-2xl shadow-indigo-950/20">
+          <div className="mb-4 flex items-center justify-between">
+            <div>
+              <p className="text-xs uppercase tracking-[0.2em] text-slate-400">New Project</p>
+              <h2 className="mt-2 text-xl font-semibold text-white">Describe your video</h2>
+            </div>
+            <button className="btn-tertiary flex items-center gap-2 text-sm">
+              <SlidersHorizontal className="h-4 w-4" />
+              Smart Prompt
+            </button>
+          </div>
+
+          <textarea
+            value={prompt}
+            onChange={(e) => setPrompt(e.target.value)}
+            className="min-h-[180px] w-full resize-none rounded-2xl border border-white/10 bg-slate-950/70 p-4 text-base text-slate-100 shadow-inner shadow-black/20"
+            placeholder="Describe the video you want to create..."
+          />
+
+          <div className="mt-4 flex flex-wrap gap-2">
+            {EXAMPLE_PROMPTS.map((item) => (
+              <button
+                key={item.title}
+                onClick={() => setPrompt(item.content)}
+                className="rounded-full border border-slate-700 bg-slate-800/70 px-3 py-1.5 text-xs text-slate-200 transition hover:border-indigo-500 hover:text-white"
+              >
+                {item.title}
+              </button>
+            ))}
+          </div>
+
+          <div className="mt-6 flex flex-wrap items-center justify-between gap-4">
+            <div className="flex items-center gap-2 text-sm text-slate-400">
+              <Sparkles className="h-4 w-4 text-violet-400" />
+              AI creates scenes, script, voice, and music
+            </div>
+            <button onClick={handleCreate} className="btn-primary flex items-center gap-2">
+              <ArrowRight className="h-4 w-4" />
+              Generate Video
+            </button>
+          </div>
+        </motion.div>
+
+        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
+          <div className="rounded-3xl border border-white/10 bg-gradient-to-br from-indigo-600/15 via-violet-600/10 to-slate-900 p-5">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-xs uppercase tracking-[0.18em] text-indigo-200">AI flow</p>
+                <h3 className="mt-2 text-xl font-semibold text-white">Prompt to production</h3>
+              </div>
+              <div className="rounded-2xl bg-white/5 p-2">
+                <Clapperboard className="h-6 w-6 text-indigo-200" />
+              </div>
+            </div>
+            <div className="mt-5 grid gap-3">
+              {['Prompt', 'Scene Planning', 'Voice & Music', 'Render'].map((step, index) => (
+                <div key={step} className="flex items-center gap-3 rounded-xl border border-white/10 bg-slate-950/30 p-2.5">
+                  <div className="flex h-7 w-7 items-center justify-center rounded-full bg-indigo-500/80 text-xs font-semibold text-white">
+                    {index + 1}
+                  </div>
+                  <span className="text-sm text-slate-200">{step}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="rounded-3xl border border-white/10 bg-slate-900/80 p-5">
+            <h3 className="text-lg font-semibold text-white">Popular formats</h3>
+            <div className="mt-4 grid grid-cols-2 gap-3">
+              {Object.entries(VIDEO_FORMATS).slice(1, 7).map(([key, value]) => (
+                <div key={key} className="rounded-2xl border border-white/10 bg-slate-950/40 p-3">
+                  <p className="text-sm font-medium text-white">{value.label}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </motion.div>
+      </div>
+
+      <div className="mt-8 grid gap-5 md:grid-cols-4">
+        {stats.map((stat) => (
+          <div key={stat.label} className="rounded-2xl border border-white/10 bg-slate-900/80 p-4">
+            <div className={`h-1.5 w-16 rounded-full bg-gradient-to-r ${stat.accent}`} />
+            <p className="mt-4 text-3xl font-bold text-white">{stat.value}</p>
+            <p className="mt-2 text-sm text-slate-400">{stat.label}</p>
+          </div>
+        ))}
+      </div>
+
+      <div className="mt-8 grid gap-6 xl:grid-cols-[1.2fr_0.8fr]">
+        <div className="rounded-3xl border border-white/10 bg-slate-900/80 p-5">
+          <div className="mb-5 flex items-center justify-between">
+            <h3 className="text-xl font-semibold text-white">Recent projects</h3>
+            <Link href="/projects" className="text-sm text-indigo-300 hover:text-indigo-200">View all</Link>
+          </div>
+
+          <div className="space-y-3">
+            {recentProjects.map((project) => (
+              <div key={project.title} className="flex items-center justify-between rounded-2xl border border-white/10 bg-slate-950/40 p-3.5">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-500 to-violet-500 text-white">
+                    <Play className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <p className="font-medium text-white">{project.title}</p>
+                    <p className="text-sm text-slate-400">{project.type}</p>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <span className={`inline-flex rounded-full px-2 py-1 text-[10px] font-medium ${project.status === 'Completed' ? 'bg-emerald-500/15 text-emerald-300' : project.status === 'Rendering' ? 'bg-yellow-500/15 text-yellow-300' : 'bg-slate-700 text-slate-300'}`}>
+                    {project.status}
+                  </span>
+                  <p className="mt-2 text-xs text-slate-500">{project.time}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="rounded-3xl border border-white/10 bg-slate-900/80 p-5">
+          <div className="mb-5 flex items-center justify-between">
+            <h3 className="text-xl font-semibold text-white">Templates</h3>
+            <Link href="/templates" className="text-sm text-indigo-300 hover:text-indigo-200">Browse</Link>
+          </div>
+
+          <div className="grid gap-3">
+            {templates.map((template) => (
+              <div key={template.name} className="rounded-2xl border border-white/10 bg-slate-950/40 p-3">
+                <div className={`mb-3 h-20 rounded-xl bg-gradient-to-r ${template.color}`} />
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="font-medium text-white">{template.name}</p>
+                    <p className="text-sm text-slate-400">{template.type}</p>
+                  </div>
+                  <ArrowRight className="h-4 w-4 text-slate-400" />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

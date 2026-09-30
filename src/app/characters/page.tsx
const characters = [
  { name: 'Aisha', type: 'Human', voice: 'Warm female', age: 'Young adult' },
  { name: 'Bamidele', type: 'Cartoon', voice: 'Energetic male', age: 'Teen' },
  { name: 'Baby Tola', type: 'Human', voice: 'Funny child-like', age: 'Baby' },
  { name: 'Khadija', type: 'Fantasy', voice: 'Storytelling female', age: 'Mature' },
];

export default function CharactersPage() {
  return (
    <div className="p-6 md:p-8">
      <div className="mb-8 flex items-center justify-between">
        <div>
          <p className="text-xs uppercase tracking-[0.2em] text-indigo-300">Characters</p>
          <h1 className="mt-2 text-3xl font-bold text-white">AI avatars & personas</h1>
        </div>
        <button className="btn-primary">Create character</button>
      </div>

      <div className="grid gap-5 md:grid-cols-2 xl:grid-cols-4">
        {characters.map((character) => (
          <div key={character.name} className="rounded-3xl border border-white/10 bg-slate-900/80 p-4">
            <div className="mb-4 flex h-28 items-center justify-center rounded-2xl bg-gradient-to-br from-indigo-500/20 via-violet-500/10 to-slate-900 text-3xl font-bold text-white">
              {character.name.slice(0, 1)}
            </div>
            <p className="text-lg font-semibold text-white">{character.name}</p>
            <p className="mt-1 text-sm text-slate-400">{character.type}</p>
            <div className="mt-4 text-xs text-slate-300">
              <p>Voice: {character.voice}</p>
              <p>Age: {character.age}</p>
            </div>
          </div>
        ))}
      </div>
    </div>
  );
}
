@@ -1,0 +1,32 @@
+src/app/templates/page.tsx
+const templates = [
+  { title: 'YouTube Shorts', category: 'Short-form', accent: 'from-pink-500 to-rose-500' },
+  { title: 'Storytelling Video', category: 'Narrative', accent: 'from-violet-500 to-indigo-500' },
+  { title: 'Education Explainer', category: 'Learning', accent: 'from-cyan-500 to-blue-500' },
+  { title: 'Product Ad', category: 'Commercial', accent: 'from-emerald-500 to-teal-500' },
+  { title: 'Avatar Presenter', category: 'Talking Character', accent: 'from-orange-500 to-amber-500' },
+  { title: 'Podcast Promo', category: 'Social', accent: 'from-purple-500 to-fuchsia-500' },
+];
+
+export default function TemplatesPage() {
+  return (
+    <div className="p-6 md:p-8">
+      <div className="mb-8">
+        <p className="text-xs uppercase tracking-[0.2em] text-indigo-300">Templates</p>
+        <h1 className="mt-2 text-3xl font-bold text-white">Ready-made video templates</h1>
+      </div>
+
+      <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+        {templates.map((template) => (
+          <div key={template.title} className="rounded-3xl border border-white/10 bg-slate-900/80 p-4">
+            <div className={`h-36 rounded-2xl bg-gradient-to-r ${template.accent}`} />
+            <div className="mt-4">
+              <p className="text-lg font-semibold text-white">{template.title}</p>
+              <p className="mt-1 text-sm text-slate-400">{template.category}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}

@@ -1,0 +1,12 @@
+src/app/api/projects/[id]/generate/route.ts
+import { NextResponse } from 'next/server';
+
+export async function POST(_: Request, { params }: { params: { id: string } }) {
+  return NextResponse.json({
+    success: true,
+    projectId: params.id,
+    status: 'rendering',
+    message: 'Video generation started successfully.',
+    progress: 65,
+  });
+}

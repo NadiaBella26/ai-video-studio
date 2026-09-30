@@ -1,0 +1,15 @@
+src/app/api/ai/generate-script/route.ts
+import { NextResponse } from 'next/server';
+
+export async function POST(req: Request) {
+  const body = await req.json();
+  const prompt = body.prompt || '';
+
+  const script = [
+    { scene: 1, title: 'Hook', text: 'Open with a strong visual hook that instantly establishes the main character and desired mood.' },
+    { scene: 2, title: 'Story', text: `Develop the concept from the prompt: ${prompt}. Show expressive behavior, dialogue, and motion.` },
+    { scene: 3, title: 'Action', text: 'Add a direct call to action or emotional payoff that feels memorable and clear.' },
+  ];
+
+  return NextResponse.json({ success: true, script });
+}

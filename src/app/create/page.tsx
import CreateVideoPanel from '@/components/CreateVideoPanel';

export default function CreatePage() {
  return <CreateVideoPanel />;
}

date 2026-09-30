@@ -1,0 +1,211 @@
+'use client';
+
+import { useEffect, useState } from 'react';
+import { ArrowLeft, Download, Film, ImageIcon, Layers3, Music4, Play, Sparkles, Wand2, Captions } from 'lucide-react';
+import Link from 'next/link';
+
+export default function VideoProjectEditor() {
+  const [project, setProject] = useState<any>(null);
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [progress, setProgress] = useState(0);
+
+  useEffect(() => {
+    const saved = localStorage.getItem('ai-video-project-draft');
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      setProject(parsed);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!isGenerating) return;
+    const interval = setInterval(() => {
+      setProgress((prev) => {
+        if (prev >= 100) {
+          clearInterval(interval);
+          setIsGenerating(false);
+          return 100;
+        }
+        return prev + 10;
+      });
+    }, 500);
+
+    return () => clearInterval(interval);
+  }, [isGenerating]);
+
+  const updateProject = (updates: Record<string, any>) => {
+    setProject((prev: any) => ({ ...prev, ...updates }));
+    localStorage.setItem('ai-video-project-draft', JSON.stringify({ ...project, ...updates }));
+  };
+
+  if (!project) {
+    return (
+      <div className="flex min-h-screen items-center justify-center text-slate-300">
+        <div className="rounded-3xl border border-white/10 bg-slate-900/80 p-10 text-center">
+          <p className="text-lg font-semibold">No project ready yet.</p>
+          <Link href="/create" className="mt-4 inline-flex items-center gap-2 text-indigo-300">
+            <ArrowLeft className="h-4 w-4" />
+            Go to Create Video
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  const timelineCards = [
+    { title: 'Scene 1', label: 'Intro Hook', duration: '8s' },
+    { title: 'Scene 2', label: 'Main Story', duration: '22s' },
+    { title: 'Scene 3', label: 'CTA', duration: '10s' },
+  ];
+
+  return (
+    <div className="p-6 md:p-8">
+      <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <p className="text-xs uppercase tracking-[0.2em] text-indigo-300">Editor</p>
+          <h1 className="mt-2 text-3xl font-bold text-white">{project.title}</h1>
+        </div>
+        <div className="flex items-center gap-3">
+          <button className="btn-secondary inline-flex items-center gap-2">
+            <Wand2 className="h-4 w-4" />
+            Enhance Prompt
+          </button>
+          <button
+            onClick={() => setIsGenerating(true)}
+            className="btn-primary inline-flex items-center gap-2"
+          >
+            <Sparkles className="h-4 w-4" />
+            {isGenerating ? 'Generating...' : 'Render Video'}
+          </button>
+        </div>
+      </div>
+
+      {isGenerating && (
+        <div className="mb-6 rounded-3xl border border-indigo-500/30 bg-gradient-to-r from-indigo-500/10 to-violet-500/10 p-4">
+          <div className="mb-2 flex items-center justify-between text-sm text-slate-200">
+            <span>Generating scenes and render pipeline</span>
+            <span>{progress}%</span>
+          </div>
+          <div className="h-2.5 overflow-hidden rounded-full bg-slate-800">
+            <div className="h-full rounded-full bg-gradient-to-r from-indigo-500 via-violet-500 to-pink-500 transition-all" style={{ width: `${progress}%` }} />
+          </div>
+        </div>
+      )}
+
+      <div className="grid gap-6 xl:grid-cols-[1.25fr_0.75fr]">
+        <div className="space-y-6">
+          <div className="rounded-3xl border border-white/10 bg-slate-900/80 p-5">
+            <div className="flex items-center justify-between">
+              <h2 className="text-xl font-semibold text-white">Preview</h2>
+              <div className="flex items-center gap-2 text-sm text-slate-300">
+                <Film className="h-4 w-4" />
+                {project.aspectRatio}
+              </div>
+            </div>
+            <div className={`video-preview mt-4 ${project.aspectRatio === '16:9' ? 'landscape' : project.aspectRatio === '1:1' ? 'square' : project.aspectRatio === '4:5' ? 'social' : ''}`}>
+              <div className="flex h-full w-full items-center justify-center bg-[radial-gradient(circle_at_center,_rgba(168,85,247,0.45),_transparent_35%),linear-gradient(135deg,#0f172a,#111827,#020617)]">
+                <div className="text-center">
+                  <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-indigo-500 to-pink-500 text-white shadow-lg shadow-indigo-500/30">
+                    <Play className="h-7 w-7 fill-white" />
+                  </div>
+                  <p className="text-xl font-semibold text-white">{project.title}</p>
+                  <p className="mt-2 text-sm text-slate-300">{project.duration}s • {project.language} • {project.voiceType}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="rounded-3xl border border-white/10 bg-slate-900/80 p-5">
+            <div className="mb-4 flex items-center justify-between">
+              <h2 className="text-xl font-semibold text-white">Timeline</h2>
+              <button className="text-sm text-indigo-300">Add Scene</button>
+            </div>
+
+            <div className="space-y-3">
+              {timelineCards.map((scene, idx) => (
+                <div key={scene.title} className="flex items-center gap-4 rounded-2xl border border-white/10 bg-slate-950/50 p-3">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-500 to-violet-500 text-sm font-semibold text-white">
+                    {idx + 1}
+                  </div>
+                  <div className="flex-1">
+                    <p className="font-medium text-white">{scene.title}</p>
+                    <p className="text-sm text-slate-400">{scene.label}</p>
+                  </div>
+                  <span className="rounded-full bg-slate-800 px-2 py-1 text-xs text-slate-300">{scene.duration}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        <div className="space-y-6">
+          <div className="rounded-3xl border border-white/10 bg-slate-900/80 p-5">
+            <h3 className="text-lg font-semibold text-white">Project Settings</h3>
+            <div className="mt-4 space-y-4">
+              <div>
+                <label className="mb-2 block text-sm text-slate-300">Project Title</label>
+                <input value={project.title} onChange={(e) => updateProject({ title: e.target.value })} />
+              </div>
+              <div>
+                <label className="mb-2 block text-sm text-slate-300">Prompt</label>
+                <textarea value={project.prompt} onChange={(e) => updateProject({ prompt: e.target.value })} className="min-h-[120px] w-full" />
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="mb-2 block text-sm text-slate-300">Format</label>
+                  <select value={project.videoType} onChange={(e) => updateProject({ videoType: e.target.value })}>
+                    <option value="shorts">YouTube Shorts</option>
+                    <option value="reels">Instagram Reels</option>
+                    <option value="portrait">Portrait</option>
+                    <option value="landscape">Landscape</option>
+                    <option value="advertisement">Advertisement</option>
+                    <option value="educational">Educational</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="mb-2 block text-sm text-slate-300">Aspect Ratio</label>
+                  <select value={project.aspectRatio} onChange={(e) => updateProject({ aspectRatio: e.target.value })}>
+                    <option value="9:16">9:16</option>
+                    <option value="16:9">16:9</option>
+                    <option value="1:1">1:1</option>
+                    <option value="4:5">4:5</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="rounded-3xl border border-white/10 bg-slate-900/80 p-5">
+            <h3 className="text-lg font-semibold text-white">Tooling</h3>
+            <div className="mt-4 space-y-3">
+              {[
+                { label: 'Captions', icon: Captions },
+                { label: 'Voiceover', icon: Music4 },
+                { label: 'Scene Regeneration', icon: Wand2 },
+                { label: 'Image to Video', icon: ImageIcon },
+              ].map(({ label, icon: Icon }) => (
+                <button key={label} className="flex w-full items-center justify-between rounded-2xl border border-white/10 bg-slate-950/40 p-3 text-left text-slate-200 transition hover:border-indigo-500/40">
+                  <div className="flex items-center gap-3">
+                    <Icon className="h-4 w-4 text-indigo-300" />
+                    <span>{label}</span>
+                  </div>
+                  <span className="text-xs text-slate-400">Ready</span>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="rounded-3xl border border-white/10 bg-gradient-to-br from-emerald-600/20 via-slate-900 to-slate-900 p-5">
+            <h3 className="text-lg font-semibold text-white">Export</h3>
+            <div className="mt-4 flex items-center gap-3">
+              <button className="btn-primary inline-flex items-center gap-2">
+                <Download className="h-4 w-4" />
+                Download Video
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
