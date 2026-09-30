@@ -1,0 +1,38 @@
+import { ArrowUpRight, Layers3, Sparkles, Download, Play, Clock3, MessageSquare, Wand2, ImageIcon, Film, Languages, Mic2, CheckCircle2 } from 'lucide-react';
+
+const features = [
+  { title: 'AI Prompt Builder', description: 'Transform simple ideas into production-ready prompts with scene breakdowns.', icon: Wand2 },
+  { title: 'Scene Editor', description: 'Edit, reorder, regenerate, and remix scenes before export.', icon: Layers3 },
+  { title: 'Voice & Language', description: 'Generate viral-ready content in English, Pidgin, Yoruba, Igbo, Hausa, and more.', icon: Languages },
+  { title: 'Music & Captions', description: 'Auto-match background music and synchronized subtitles to the script.', icon: Mic2 },
+  { title: 'Avatar Creator', description: 'Build talking-character videos and reusable branded personas.', icon: MessageSquare },
+  { title: 'One-click Export', description: 'Download optimized videos in portrait, landscape, square, and social formats.', icon: Download },
+];
+
+export default function FeatureShowcase() {
+  return (
+    <div className="rounded-3xl border border-white/10 bg-slate-900/80 p-6">
+      <div className="mb-6 flex items-center justify-between">
+        <div>
+          <p className="text-xs uppercase tracking-[0.2em] text-indigo-300">Studio capabilities</p>
+          <h2 className="mt-2 text-2xl font-bold text-white">Everything needed for AI-driven video production</h2>
+        </div>
+        <div className="rounded-full border border-indigo-500/40 bg-indigo-500/10 px-3 py-1 text-xs text-indigo-200">
+          Full workflow
+        </div>
+      </div>
+
+      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+        {features.map(({ title, description, icon: Icon }) => (
+          <div key={title} className="rounded-2xl border border-white/10 bg-slate-950/40 p-4">
+            <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-500 to-violet-500 text-white">
+              <Icon className="h-5 w-5" />
+            </div>
+            <h3 className="text-lg font-semibold text-white">{title}</h3>
+            <p className="mt-2 text-sm text-slate-400">{description}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
