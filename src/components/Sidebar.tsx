@@ -1,0 +1,4 @@
+'use client';
+import Link from 'next/link';import {Home,Plus,FolderOpen,LayoutTemplate,Users,Settings,Film} from 'lucide-react';
+const items=[['/','Dashboard',Home],['/create','Create Video',Plus],['/projects','My Videos',FolderOpen],['/templates','Templates',LayoutTemplate],['/characters','AI Characters',Users],['/settings','Settings',Settings]] as const;
+export default function Sidebar(){return <aside className="hidden w-72 shrink-0 border-r border-white/10 bg-slate-950/80 md:flex md:flex-col"><div className="border-b border-white/10 p-5 flex gap-3 items-center"><Film className="h-8 w-8 text-indigo-400"/><div><b>AI Video Studio</b><p className="text-xs text-slate-400">Creative Suite</p></div></div><nav className="flex-1 space-y-2 p-4">{items.map(([href,label,Icon])=><Link className="flex items-center gap-3 rounded-xl px-3 py-3 text-slate-300 hover:bg-slate-800 hover:text-white" href={href} key={href}><Icon className="h-4 w-4"/>{label}</Link>)}</nav></aside>}

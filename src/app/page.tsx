@@ -1,11 +1,2 @@
-'use client';
-
-import { useState } from 'react';
-import Link from 'next/link';
-import { motion } from 'framer-motion';
-import { Wand2, Play, Film, Smartphone, Sparkles } from 'lucide-react';
-import Dashboard from '@/components/Dashboard';
-
-export default function Home() {
-  return <Dashboard />;
-}
+import Dashboard from '@/components/Dashboard';import FeatureShowcase from '@/components/FeatureShowcase';
+export default function Home(){return <div className="space-y-6"><Dashboard/><div className="px-6 md:px-8"><FeatureShowcase/></div></div>}

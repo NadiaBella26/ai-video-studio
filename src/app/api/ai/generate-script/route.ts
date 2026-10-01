@@ -1,0 +1,2 @@
+import { NextResponse } from 'next/server';
+export async function POST(req:Request){const {prompt=''}=await req.json();return NextResponse.json({success:true,script:[{scene:1,title:'Hook',text:`Open with an engaging visual hook for: ${prompt}`},{scene:2,title:'Main Story',text:'Develop the action and dialogue with expressive character movement.'},{scene:3,title:'Call to Action',text:'Close with a memorable message and clear CTA.'}]})}
